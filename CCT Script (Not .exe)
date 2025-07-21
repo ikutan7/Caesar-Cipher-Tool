@@ -1,0 +1,84 @@
+# encoder/decoder - ikutan. :3
+# Python Script not converted to EXE
+
+import tkinter as tk
+from tkinter import ttk
+
+# Case-Sensitive with Numbers and Special Characters Caesar Cipher
+datalist = [
+    "abcdefghijklmnopqrstuvwxyz",
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+    "0123456789",
+    "@!#$%^&*()_+-=[]{}|;':\",.<>?/~`"
+]
+charset = ''.join(datalist)
+
+def encode(text, shift):
+    return ''.join(
+        charset[(charset.index(c) + shift) % len(charset)] if c in charset else c
+        for c in text
+    )
+
+def decode(text, shift):
+    return encode(text, -shift)
+
+def ui():
+    window = tk.Tk()
+    window.title("Caesar Cipher Tool")
+    window.geometry("400x250")
+    window.resizable(True, False)
+    window.minsize(400, 250)
+    window.configure(bg="#adfab7") # idk if it changes anything
+
+    # Style setup
+    style = ttk.Style(window)
+    style.theme_use('clam')
+    style.configure("TLabel", background="#adfab7", font=("Segoe UI", 12))
+    style.configure("TButton", font=("Segoe UI", 11, "bold"), foreground="White", background="#4CAF50")
+    style.map("TButton", background=[("active", "#45a049")])
+    style.configure("TRadiobutton", background="#adfab7", font=("Segoe UI", 11))
+
+    # Variables
+    mode = tk.StringVar(value="encode")
+    shift = tk.IntVar(value=1)
+
+    # Main container
+    container = ttk.Frame(window, padding=20)
+    container.grid(row=0, column=0, sticky="nsew")
+    window.columnconfigure(0, weight=1)
+    window.rowconfigure(0, weight=1)
+
+    # Grid column weights
+    for i in range(3):
+        container.columnconfigure(i, weight=1)
+
+    # Text input
+    ttk.Label(container, text="Text Value:").grid(row=0, column=0, sticky="w", pady=5)
+    input_box = ttk.Entry(container)
+    input_box.grid(row=0, column=1, columnspan=2, sticky="ew", pady=5)
+
+    # Shift input
+    ttk.Label(container, text="Shift Value:").grid(row=1, column=0, sticky="w", pady=5)
+    shift_box = ttk.Spinbox(container, from_=0, to=len(charset)-1, textvariable=shift, width=10)
+    shift_box.grid(row=1, column=1, sticky="w", pady=5)
+
+    # Mode toggle
+    ttk.Label(container, text="Mode:").grid(row=2, column=0, sticky="w", pady=5)
+    ttk.Radiobutton(container, text="Encode", variable=mode, value="encode").grid(row=2, column=1, sticky="w")
+    ttk.Radiobutton(container, text="Decode", variable=mode, value="decode").grid(row=2, column=2, sticky="w")
+
+    # Output label and entry
+    ttk.Label(container, text="Output:").grid(row=3, column=0, sticky="nw", pady=(15, 5))
+    output_var = tk.StringVar()
+    output_entry = ttk.Entry(container, textvariable=output_var, state="readonly", font=("Courier", 12))
+    output_entry.grid(row=3, column=1, columnspan=2, sticky="ew", pady=(15, 20))
+
+    # Run button
+    run_button = ttk.Button(container, text="Run", command=lambda: output_var.set(
+        encode(input_box.get(), shift.get()) if mode.get() == "encode" else decode(input_box.get(), shift.get())
+    ))
+    run_button.grid(row=4, column=0, columnspan=3, pady=10, sticky="ew")
+
+    window.mainloop()
+
+ui()
